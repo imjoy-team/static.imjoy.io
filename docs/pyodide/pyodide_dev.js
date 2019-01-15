@@ -187,10 +187,6 @@ var languagePluginLoader = new Promise((resolve, reject) => {
                                '_importlib.invalidate_caches()\n');
     });
 
-    if (window.iodide !== undefined) {
-      window.iodide.evalQueue.await([ promise ]);
-    }
-
     return promise;
   };
 
@@ -233,6 +229,7 @@ var languagePluginLoader = new Promise((resolve, reject) => {
   ////////////////////////////////////////////////////////////
   // Rearrange namespace for public API
   let PUBLIC_API = [
+    'globals',
     'loadPackage',
     'loadedPackages',
     'pyimport',
@@ -277,6 +274,8 @@ var languagePluginLoader = new Promise((resolve, reject) => {
           .then((response) => response.json())
           .then((json) => {
             fixRecursionLimit(window.pyodide);
+            window.pyodide.globals =
+                window.pyodide.runPython('import sys\nsys.modules["__main__"]');
             window.pyodide = makePublicAPI(window.pyodide, PUBLIC_API);
             window.pyodide._module.packages = json;
             resolve();
