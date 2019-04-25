@@ -280,7 +280,7 @@ template {
 
 html {
   box-sizing: border-box;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.5;
   -webkit-tap-highlight-color: transparent;
 }
@@ -1509,23 +1509,23 @@ video.video-responsive::before {
 }
 
 .container.grid-xl {
-  max-width: 1296px;
+  max-width: 1292.8px;
 }
 
 .container.grid-lg {
-  max-width: 976px;
+  max-width: 972.8px;
 }
 
 .container.grid-md {
-  max-width: 856px;
+  max-width: 852.8px;
 }
 
 .container.grid-sm {
-  max-width: 616px;
+  max-width: 612.8px;
 }
 
 .container.grid-xs {
-  max-width: 496px;
+  max-width: 492.8px;
 }
 
 .show-xs,
