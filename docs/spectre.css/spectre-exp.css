@@ -148,7 +148,7 @@
 .calendar .calendar-date .date-item.active {
   background: #3580ff;
   border-color: #1b70ff;
-  color: #fff;
+  color: #b7e2ff;
 }
 
 .calendar .calendar-date .date-item.badge::after {
@@ -201,7 +201,7 @@
 .calendar .calendar-range.range-end .date-item {
   background: #3580ff;
   border-color: #1b70ff;
-  color: #fff;
+  color: #b7e2ff;
 }
 
 .calendar .calendar-range .date-item {
@@ -466,7 +466,7 @@
   background: currentColor;
   border-radius: 50%;
   box-shadow: 0 -5px, 0 5px;
-  color: #fff;
+  color: #b7e2ff;
   content: "";
   height: 3px;
   position: absolute;
@@ -499,7 +499,7 @@
 .comparison-slider .comparison-label {
   background: rgba(5, 52, 132, .5);
   bottom: .8rem;
-  color: #fff;
+  color: #b7e2ff;
   padding: .2rem .4rem;
   position: absolute;
   -webkit-user-select: none;
@@ -536,7 +536,7 @@
 .filter .filter-tag#tag-7:checked ~ .filter-nav .chip[for="tag-7"],
 .filter .filter-tag#tag-8:checked ~ .filter-nav .chip[for="tag-8"] {
   background: #448aff;
-  color: #fff;
+  color: #b7e2ff;
 }
 
 .filter .filter-tag#tag-1:checked ~ .filter-body .filter-item:not([data-tag~="tag-1"]),
@@ -589,11 +589,11 @@
 }
 
 .meter::-webkit-meter-optimum-value {
-  background: #448aff;
+  background: #1569fc;
 }
 
 .meter::-webkit-meter-suboptimum-value {
-  background: #ff5252;
+  background: #fa7777;
 }
 
 .meter::-webkit-meter-even-less-good-value {
@@ -608,11 +608,11 @@
 }
 
 .meter:-moz-meter-optimum::-moz-meter-bar {
-  background: #448aff;
+  background: #1569fc;
 }
 
 .meter:-moz-meter-sub-optimum::-moz-meter-bar {
-  background: #ff5252;
+  background: #fa7777;
 }
 
 .meter:-moz-meter-sub-sub-optimum::-moz-meter-bar {
@@ -726,7 +726,7 @@
 
 .parallax .parallax-front {
   align-items: center;
-  color: #fff;
+  color: #b7e2ff;
   display: flex;
   display: -ms-flexbox;
   -ms-flex-align: center;
@@ -1024,7 +1024,7 @@
 .timeline .timeline-item .timeline-icon {
   align-items: center;
   border-radius: 50%;
-  color: #fff;
+  color: #b7e2ff;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-align: center;
