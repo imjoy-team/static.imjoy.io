@@ -2652,10 +2652,20 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
   }
 
   add_service(api, overwrite) {
-    if (api instanceof Object) {
+    if (!api || Array.isArray(api)) throw new Error("Invalid service object");
+
+    if (api.constructor === Object) {
       api = Object.assign({}, api);
     } else {
-      api = {};
+      const normApi = {};
+
+      for (let k of Object.getOwnPropertyNames(Object.getPrototypeOf(api))) {
+        if (k !== 'constructor') {
+          if (typeof api[k] === 'function') normApi[k] = api[k].bind(api);else normApi[k] = api[k];
+        }
+      }
+
+      api = normApi;
     }
 
     if (!api.id) {
