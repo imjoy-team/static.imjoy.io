@@ -2660,8 +2660,8 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
       const normApi = {};
 
       for (let k of Object.getOwnPropertyNames(Object.getPrototypeOf(api))) {
-        if (k !== 'constructor') {
-          if (typeof api[k] === 'function') normApi[k] = api[k].bind(api);else normApi[k] = api[k];
+        if (k !== "constructor") {
+          if (typeof api[k] === "function") normApi[k] = api[k].bind(api);else normApi[k] = api[k];
         }
       }
 
@@ -2669,7 +2669,7 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
     }
 
     if (!api.id) {
-      api.id = api.name || "default";
+      api.id = "default";
     }
 
     if (!api.name) {
@@ -3912,6 +3912,8 @@ async function connectToServer(config) {
   wm.rpc = rpc;
 
   function _export(api) {
+    api.id = "default";
+    api.name = config.name || "default";
     return rpc.register_service(api, true);
   }
 
