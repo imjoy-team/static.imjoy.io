@@ -2369,6 +2369,8 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
     Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(client_id, "client_id is required");
     this._client_id = client_id;
     this._name = name;
+    this._user_info = null;
+    this._workspace = null;
     this.root_target_id = root_target_id;
     this.default_context = default_context || {};
     this._method_annotations = new WeakMap();
@@ -2381,28 +2383,56 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
     this._object_store = {
       services: this._services
     };
-    this.add_service({
-      id: "built-in",
-      type: "built-in",
-      name: "RPC built-in services",
-      config: {
-        require_context: true,
-        visibility: "public"
-      },
-      ping: this._ping.bind(this),
-      get_service: this.get_local_service.bind(this),
-      register_service: this.register_service.bind(this),
-      message_cache: {
-        create: this._create_message.bind(this),
-        append: this._append_message.bind(this),
-        process: this._process_message.bind(this),
-        remove: this._remove_message.bind(this)
+
+    if (connection) {
+      this.add_service({
+        id: "built-in",
+        type: "built-in",
+        name: "RPC built-in services",
+        config: {
+          require_context: true,
+          visibility: "public"
+        },
+        ping: this._ping.bind(this),
+        get_service: this.get_local_service.bind(this),
+        register_service: this.register_service.bind(this),
+        message_cache: {
+          create: this._create_message.bind(this),
+          append: this._append_message.bind(this),
+          process: this._process_message.bind(this),
+          remove: this._remove_message.bind(this)
+        }
+      });
+      this.on("method", this._handle_method.bind(this));
+      Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(connection.emit_message && connection.on_message);
+      this._emit_message = connection.emit_message.bind(connection);
+      connection.on_message(this._on_message.bind(this)); // Update the server and obtain client info
+
+      this._get_user_info();
+    } else {
+      this._emit_message = function () {
+        console.log("No connection to emit message");
+      };
+    }
+  }
+
+  async _get_user_info() {
+    if (this.root_target_id) {
+      // try to get the root service
+      try {
+        await this.get_remote_root_service(5.0);
+        Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(this._remote_root_service);
+        this._user_info = await this._remote_root_service.get_user_info();
+
+        if (this._user_info.reconnection_token && this._connection.set_reconnection_token) {
+          this._connection.set_reconnection_token(this._user_info.reconnection_token);
+
+          console.info("Set reconnection token: ", this._user_info.reconnection_token);
+        }
+      } catch (exp) {
+        console.warn("Failed to fetch user info from ", this.root_target_id, exp);
       }
-    });
-    this.on("method", this._handle_method.bind(this));
-    Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(connection.emit_message && connection.on_message);
-    this._emit_message = connection.emit_message.bind(connection);
-    connection.on_message(this._on_message.bind(this));
+    }
   }
 
   register_codec(config) {
@@ -2948,7 +2978,10 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
       try {
         await this.get_remote_root_service(5.0);
         Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(this._remote_root_service);
-        await this._remote_root_service.update_client_info(this.get_client_info());
+        const workspace_info = await this._remote_root_service.update_client_info(this.get_client_info()); // Update user and workspace info
+
+        this._user_info = workspace_info.user_info;
+        this._workspace = workspace_info.workspace;
       } catch (exp) {
         // pylint: disable=broad-except
         console.warn("Failed to notify service update to", this.root_target_id, exp);
@@ -3829,7 +3862,12 @@ class WebsocketRPCConnection {
 
     this._websocket = null;
     this._handle_message = null;
+    this._reconnection_token = null;
     this._server_url = server_url;
+  }
+
+  set_reconnection_token(token) {
+    this._reconnection_token = token;
   }
 
   on_message(handler) {
@@ -3838,7 +3876,9 @@ class WebsocketRPCConnection {
   }
 
   async open() {
-    this._websocket = new WebSocket(this._server_url);
+    const server_url = this._reconnection_token ? `${this._server_url}&reconnection_token=${this._reconnection_token}` : this._server_url;
+    console.info("Receating a new connection to ", server_url.split("?")[0]);
+    this._websocket = new WebSocket(server_url);
     this._websocket.binaryType = "arraybuffer";
 
     this._websocket.onmessage = event => {
@@ -3918,13 +3958,7 @@ async function connectToServer(config) {
   }
 
   async function getPlugin(query) {
-    if (typeof query === "string") {
-      query = {
-        name: query
-      };
-    }
-
-    return await wm.get_service(query);
+    return await wm.get_service(query + ":default");
   }
 
   async function disconnect() {
