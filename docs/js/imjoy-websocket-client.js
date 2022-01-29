@@ -2664,7 +2664,13 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
         let val = aObject[key];
 
         if (typeof val === "function" && val.__rpc_object__) {
-          if (this._client_id === val.__rpc_object__._rtarget) {
+          let client_id = val.__rpc_object__._rtarget;
+
+          if (client_id.includes("/")) {
+            client_id = client_id.split("/")[1];
+          }
+
+          if (this._client_id === client_id) {
             if (aObject instanceof Array) {
               aObject = aObject.slice();
             } // recover local method
@@ -2673,7 +2679,7 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
             aObject[key] = indexObject(this._object_store, val.__rpc_object__._rmethod);
             val = aObject[key]; // make sure it's annotated later
           } else {
-            throw new Error("Local method not found: " + val.__rpc_object__._rmethod);
+            throw new Error(`Local method not found: ${val.__rpc_object__._rmethod}, client id mismatch ${this._client_id} != ${client_id}`);
           }
         }
 
@@ -2876,7 +2882,9 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
     let target_id = encoded_method._rtarget;
 
     if (remote_workspace && !target_id.includes("/")) {
-      target_id = remote_workspace + "/" + target_id;
+      target_id = remote_workspace + "/" + target_id; // Fix the target id to be an absolute id
+
+      encoded_method._rtarget = target_id;
     }
 
     let method_id = encoded_method._rmethod;
