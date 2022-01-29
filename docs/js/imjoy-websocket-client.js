@@ -2695,17 +2695,20 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
       api = Object.assign({}, api);
     } else {
       const normApi = {};
+      const props = Object.getOwnPropertyNames(api).concat(Object.getOwnPropertyNames(Object.getPrototypeOf(api)));
 
-      for (let k of Object.getOwnPropertyNames(Object.getPrototypeOf(api))) {
+      for (let k of props) {
         if (k !== "constructor") {
           if (typeof api[k] === "function") normApi[k] = api[k].bind(api);else normApi[k] = api[k];
         }
-      }
+      } // For class instance, we need set a default id
 
+
+      api.id = api.id || "default";
       api = normApi;
     }
 
-    Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(api.id && typeof api.id === "string", "Service id not found");
+    Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(api.id && typeof api.id === "string", `Service id not found: ${api}`);
 
     if (!api.name) {
       api.name = api.id;
