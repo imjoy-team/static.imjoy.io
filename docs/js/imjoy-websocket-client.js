@@ -2406,7 +2406,8 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
       this.on("method", this._handle_method.bind(this));
       Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(connection.emit_message && connection.on_message);
       this._emit_message = connection.emit_message.bind(connection);
-      connection.on_message(this._on_message.bind(this)); // Update the server and obtain client info
+      connection.on_message(this._on_message.bind(this));
+      this._connection = connection; // Update the server and obtain client info
 
       this._get_user_info();
     } else {
