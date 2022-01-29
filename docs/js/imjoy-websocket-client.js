@@ -2903,7 +2903,11 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
 
         let store = self._get_session_store(local_session_id, true);
 
-        Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(store, `Failed to get session store ${local_session_id}`);
+        if (!store) {
+          reject(new Error(`Runtime Error: Failed to get session store ${local_session_id}`));
+          return;
+        }
+
         store["target_id"] = target_id;
         const args = await self._encode(Array.prototype.slice.call(arguments), local_session_id, local_workspace);
         const argLength = args.length; // if the last argument is an object, mark it as kwargs
@@ -3961,12 +3965,10 @@ async function connectToServer(config) {
   async function _export(api) {
     api.id = "default";
     api.name = config.name || api.id;
-    await rpc.register_service(api, true);
-    const svc = await rpc.get_remote_service(rpc._client_id + ":default");
-
-    if (svc.setup) {
-      await svc.setup();
-    }
+    await rpc.register_service(api, true); // const svc = await rpc.get_remote_service(rpc._client_id + ":default");
+    // if (svc.setup) {
+    //   await svc.setup();
+    // }
   }
 
   async function getPlugin(query) {
