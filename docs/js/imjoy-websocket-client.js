@@ -2979,10 +2979,7 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
       try {
         await this.get_remote_root_service(5.0);
         Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(this._remote_root_service);
-        const workspace_info = await this._remote_root_service.update_client_info(this.get_client_info()); // Update user and workspace info
-
-        this._user_info = workspace_info.user_info;
-        this._workspace = workspace_info.workspace;
+        await this._remote_root_service.update_client_info(this.get_client_info());
       } catch (exp) {
         // pylint: disable=broad-except
         console.warn("Failed to notify service update to", this.root_target_id, exp);
