@@ -2705,9 +2705,7 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
       api = normApi;
     }
 
-    if (!api.id) {
-      api.id = "default";
-    }
+    Object(_utils_js__WEBPACK_IMPORTED_MODULE_0__["assert"])(api.id && typeof api.id === "string", "Service id not found");
 
     if (!api.name) {
       api.name = api.id;
@@ -3957,10 +3955,15 @@ async function connectToServer(config) {
   const wm = await rpc.get_remote_service("workspace-manager:default");
   wm.rpc = rpc;
 
-  function _export(api) {
+  async function _export(api) {
     api.id = "default";
-    api.name = config.name || "default";
-    return rpc.register_service(api, true);
+    api.name = config.name || api.id;
+    await rpc.register_service(api, true);
+    const svc = await rpc.get_remote_service(rpc._client_id + ":default");
+
+    if (svc.setup) {
+      await svc.setup();
+    }
   }
 
   async function getPlugin(query) {
