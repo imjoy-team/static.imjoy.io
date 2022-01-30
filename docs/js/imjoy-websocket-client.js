@@ -2428,7 +2428,9 @@ class RPC extends _utils_js__WEBPACK_IMPORTED_MODULE_0__["MessageEmitter"] {
         if (this._user_info.reconnection_token && this._connection.set_reconnection_token) {
           this._connection.set_reconnection_token(this._user_info.reconnection_token);
 
-          console.info("Set reconnection token: ", this._user_info.reconnection_token);
+          const reconnection_expires_in = this._user_info.reconnection_expires_in * 0.8;
+          console.info(`Reconnection token obtained: ${this._user_info.reconnection_token}, will be refreshed in ${reconnection_expires_in} seconds`);
+          setTimeout(this._get_user_info.bind(this), reconnection_expires_in * 1000);
         }
       } catch (exp) {
         console.warn("Failed to fetch user info from ", this.root_target_id, exp);
